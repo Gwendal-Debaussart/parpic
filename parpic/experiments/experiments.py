@@ -14,6 +14,7 @@ from sklearn.metrics import (
 BASE_DIR = Path(__file__).resolve().parents[1]
 TABLES_DIR = BASE_DIR / "tables"
 
+
 def run_benchmark(
     datasets,
     methods,
@@ -27,16 +28,19 @@ def run_benchmark(
     """
 
     Parallel(n_jobs=n_jobs)(
-        delayed(run_benchmark_for_dataset)(dataset, methods, num_repeats, save_dir, metrics)
+        delayed(run_benchmark_for_dataset)(
+            dataset, methods, num_repeats, save_dir, metrics
+        )
         for dataset in datasets
     )
+
 
 if __name__ == "__main__":
     methods = method_list()
     datasets = dataset_list()
     exclude = []
-    datasets = [d for d in datasets if d['name'] not in exclude]
-    choosen_dataset_name = [dataset['name'] for dataset in datasets]
+    datasets = [d for d in datasets if d["name"] not in exclude]
+    choosen_dataset_name = [dataset["name"] for dataset in datasets]
     print("Datasets selected for benchmarking:", choosen_dataset_name)
     metrics = [
         {

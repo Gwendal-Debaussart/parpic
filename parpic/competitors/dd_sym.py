@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def dd_sym(A):
     """
     Docstring for dd_sym

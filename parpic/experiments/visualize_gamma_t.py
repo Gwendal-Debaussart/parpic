@@ -17,7 +17,10 @@ t_values = np.arange(1, 51)
 
 cmap_blue_orange = BLUE_ORANGE_CMAP
 
-def load_gamma_t_results(dataset_name, results_dir=str(TABLES_DIR / "gamma_t_sensitivity")):
+
+def load_gamma_t_results(
+    dataset_name, results_dir=str(TABLES_DIR / "gamma_t_sensitivity")
+):
     """
     Load all gamma-t sensitivity results for a given dataset.
 
@@ -43,9 +46,9 @@ def load_gamma_t_results(dataset_name, results_dir=str(TABLES_DIR / "gamma_t_sen
         std_file = f"{results_dir}/ami_stds_{dataset_name}_gamma={gamma:.2f}.json"
 
         if os.path.exists(ami_file):
-            with open(ami_file, 'r') as f:
+            with open(ami_file, "r") as f:
                 ami_scores = json.load(f)
-            with open(std_file, 'r') as f:
+            with open(std_file, "r") as f:
                 ami_stds = json.load(f)
 
             for j, t in enumerate(t_values):
@@ -81,7 +84,7 @@ def plot_heatmap(ami_matrix, dataset_name, figsize=(12, 8), save_path=None, show
     """
     fig, ax = plt.subplots(figsize=figsize)
 
-    im = ax.imshow(ami_matrix, aspect='auto', cmap=cmap_blue_orange)
+    im = ax.imshow(ami_matrix, aspect="auto", cmap=cmap_blue_orange)
 
     gamma_tick_indices = np.arange(0, len(gamma_values), 2)
     gamma_tick_labels = [f"{gamma_values[i]:.2f}" for i in gamma_tick_indices]
@@ -93,24 +96,27 @@ def plot_heatmap(ami_matrix, dataset_name, figsize=(12, 8), save_path=None, show
     ax.set_xticks(t_tick_indices)
     ax.set_xticklabels(t_tick_labels)
 
-    ax.set_xlabel('Diffusion Time (t)', fontsize=12)
-    ax.set_ylabel('Vertex measure parameter ($\\gamma$)', fontsize=12)
+    ax.set_xlabel("Diffusion Time (t)", fontsize=12)
+    ax.set_ylabel("Vertex measure parameter ($\\gamma$)", fontsize=12)
 
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label('AMI Score', fontsize=11)
+    cbar.set_label("AMI Score", fontsize=11)
 
     plt.tight_layout()
 
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
         print(f"Saved heatmap to {save_path}")
     if show:
         plt.show()
 
 
-def plot_all_heatmaps(datasets, results_dir=str(TABLES_DIR / "gamma_t_sensitivity"),
-                      save_dir=str(FIGURES_DIR / "gamma_t_sensitivity")):
+def plot_all_heatmaps(
+    datasets,
+    results_dir=str(TABLES_DIR / "gamma_t_sensitivity"),
+    save_dir=str(FIGURES_DIR / "gamma_t_sensitivity"),
+):
     """
     Load and plot heatmaps for all datasets.
 
@@ -124,9 +130,9 @@ def plot_all_heatmaps(datasets, results_dir=str(TABLES_DIR / "gamma_t_sensitivit
         Directory to save the heatmap figures
     """
     for dataset_name in datasets:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Processing {dataset_name}...")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         ami_matrix, std_matrix = load_gamma_t_results(dataset_name, results_dir)
 
@@ -157,9 +163,18 @@ def plot_all_heatmaps(datasets, results_dir=str(TABLES_DIR / "gamma_t_sensitivit
 
 if __name__ == "__main__":
     print("Gamma-t Sensitivity Heatmap Visualization")
-    print("="*60)
+    print("=" * 60)
 
-    for dataset_name in ["disbm_chain", "disbm_core_periphery", "seeds", "iris", "email_eu", "polblogs", "vertebral", "glass"]:
+    for dataset_name in [
+        "disbm_chain",
+        "disbm_core_periphery",
+        "seeds",
+        "iris",
+        "email_eu",
+        "polblogs",
+        "vertebral",
+        "glass",
+    ]:
         results_dir = str(TABLES_DIR / "gamma_t_sensitivity")
         if not os.path.exists(results_dir):
             print(f"Error: Results directory '{results_dir}' not found!")
@@ -191,8 +206,10 @@ if __name__ == "__main__":
         print(f"  AMI:   {best_ami:.4f}")
 
         print(f"\nGenerating heatmap...")
-        save_path = str(FIGURES_DIR / "gamma_t_sensitivity" / f"heatmap_{dataset_name}.pdf")
+        save_path = str(
+            FIGURES_DIR / "gamma_t_sensitivity" / f"heatmap_{dataset_name}.pdf"
+        )
         plot_heatmap(ami_matrix, dataset_name, save_path=save_path)
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("Visualization complete!")

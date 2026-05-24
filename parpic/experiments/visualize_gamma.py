@@ -59,7 +59,13 @@ def save_legend(ax, output_dir: Path, legend_name: str = "legend.pdf") -> Path:
     return legend_path
 
 
-def plot_gamma_curve(result: dict, dataset_name: str, output_dir: Path, show: bool = False, save_legend_only: bool = False) -> tuple[Path, Path]:
+def plot_gamma_curve(
+    result: dict,
+    dataset_name: str,
+    output_dir: Path,
+    show: bool = False,
+    save_legend_only: bool = False,
+) -> tuple[Path, Path]:
     """Plot and save AMI vs gamma with uncertainty band for one dataset.
 
     Returns tuple of (figure_path, legend_path).
@@ -88,7 +94,13 @@ def plot_gamma_curve(result: dict, dataset_name: str, output_dir: Path, show: bo
     best_idx = int(np.argmax(ami_values))
     best_gamma = gamma_sorted[best_idx]
     best_ami = ami_values[best_idx]
-    ax.scatter([best_gamma], [best_ami], color="#F96C39", zorder=3, label=f"Best $\\gamma$={best_gamma:.2f}")
+    ax.scatter(
+        [best_gamma],
+        [best_ami],
+        color="#F96C39",
+        zorder=3,
+        label=f"Best $\\gamma$={best_gamma:.2f}",
+    )
 
     ax.set_title(dataset_name)
     ax.set_xlabel(r"$\\gamma$")
@@ -132,7 +144,9 @@ def main() -> None:
         default=FIGURES_DIR / "gamma_sensitivity",
         help="Directory where PDF plots are saved.",
     )
-    parser.add_argument("--show", action="store_true", help="Display plots interactively.")
+    parser.add_argument(
+        "--show", action="store_true", help="Display plots interactively."
+    )
     args = parser.parse_args()
 
     if not args.results_dir.exists():
@@ -144,7 +158,9 @@ def main() -> None:
 
     legend_path = None
     for i, dataset_name in enumerate(datasets):
-        result = load_gamma_results(dataset_name=dataset_name, results_dir=args.results_dir)
+        result = load_gamma_results(
+            dataset_name=dataset_name, results_dir=args.results_dir
+        )
         output_path, legend_path = plot_gamma_curve(
             result=result,
             dataset_name=dataset_name,

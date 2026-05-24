@@ -27,4 +27,4 @@ def dsc_plus(A, gamma: float = 0.9):
     Pi_sqrt = np.diag(np.sqrt(pi))
     Pi_inv_sqrt = np.diag(1 / np.sqrt(pi))
     L = Pi_sqrt @ A @ Pi_inv_sqrt
-    return - (np.eye(L.shape[0]) - (L + L.T) / 2)
+    return -(np.eye(L.shape[0]) - (L + L.T) / 2)

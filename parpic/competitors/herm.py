@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def herm(adjacency_matrix: np.ndarray, normalized: bool = False) -> np.ndarray:
     """Compute the Hermitian adjacency matrix of a directed graph.
 

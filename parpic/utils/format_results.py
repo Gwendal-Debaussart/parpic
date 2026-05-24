@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+
 def format_results(dataset_name, results_dir, format_dir):
     """
     Format raw benchmark results into summary tables: mean and std deviation per metric and method.

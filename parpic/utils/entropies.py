@@ -5,6 +5,7 @@ import scipy.sparse as sp
 from concurrent.futures import ThreadPoolExecutor
 import multiprocessing
 
+
 def compute_entropy(
     operator: np.ndarray,
     t_max: int,
@@ -40,7 +41,10 @@ def compute_entropy(
     else:
         raise ValueError(f"Unknown entropy type: {entropy_type}")
 
-def diffusion_entropy(P: np.ndarray, max_t: int = 50, n_probes: int = 0, n_jobs: int = None) -> np.ndarray:
+
+def diffusion_entropy(
+    P: np.ndarray, max_t: int = 50, n_probes: int = 0, n_jobs: int = None
+) -> np.ndarray:
     """Compute diffusion-based entropy trajectory from a transition matrix, parallelized and using sparse matrices."""
     n = P.shape[0]
     if not sp.issparse(P):
@@ -51,11 +55,15 @@ def diffusion_entropy(P: np.ndarray, max_t: int = 50, n_probes: int = 0, n_jobs:
         distributions = np.zeros((len(source_indices), n))
         for idx, i in enumerate(source_indices):
             distributions[idx, i] = 1.0
+
         def step_entropy(distributions):
             distributions_clipped = np.clip(distributions, 1e-15, 1.0)
-            H_estimates = - np.sum(distributions_clipped * np.log(distributions_clipped), axis=1)
+            H_estimates = -np.sum(
+                distributions_clipped * np.log(distributions_clipped), axis=1
+            )
             H_total = np.sum(H_estimates) * (n / n_probes)
             return H_total
+
         n_jobs = n_jobs or min(multiprocessing.cpu_count(), len(source_indices))
         for _ in range(max_t):
             chunks = np.array_split(distributions, n_jobs)
@@ -65,10 +73,12 @@ def diffusion_entropy(P: np.ndarray, max_t: int = 50, n_probes: int = 0, n_jobs:
             entropies.append(H_total)
             distributions = distributions @ P.T
     elif n_probes == 0:
-        Pt = sp.eye(n, format='csr')
+        Pt = sp.eye(n, format="csr")
+
         def entropy_sparse(Pt):
             Pt_clipped = np.clip(Pt.data, 1e-15, 1.0)
             return -np.sum(Pt.data * np.log(Pt_clipped))
+
         for _ in range(1, max_t + 1):
             Pt = Pt @ P
             entropies.append(entropy_sparse(Pt))

@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def directed_sbm(block_sizes, P, seed =42):
+def directed_sbm(block_sizes, P, seed=42):
     """Generate a directed stochastic block model dataset.
 
     Parameters

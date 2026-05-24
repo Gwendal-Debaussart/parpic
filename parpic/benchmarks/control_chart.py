@@ -1,5 +1,6 @@
 from .utilities import load_dataset_from_local, features_to_knn
 
+
 def control_chart():
     """
     Load the Control Chart dataset.

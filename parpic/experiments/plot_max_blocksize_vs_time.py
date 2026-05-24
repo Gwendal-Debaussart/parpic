@@ -24,5 +24,8 @@ plt.ylabel("Runtime (seconds)")
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig(Path(__file__).resolve().parent / "max_blocksize_vs_time_plot.pdf", bbox_inches="tight")
+plt.savefig(
+    Path(__file__).resolve().parent / "max_blocksize_vs_time_plot.pdf",
+    bbox_inches="tight",
+)
 plt.show()

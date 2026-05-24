@@ -2,6 +2,7 @@ from torch_geometric.datasets import Coauthor
 import numpy as np
 import os
 
+
 def co_author() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Load the Coauthor CS dataset from PyTorch Geometric.

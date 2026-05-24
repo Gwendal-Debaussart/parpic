@@ -1,6 +1,7 @@
 from sklearn.datasets import load_iris
 from .utilities import features_to_knn
 
+
 def iris():
     """Load the Iris dataset.
 

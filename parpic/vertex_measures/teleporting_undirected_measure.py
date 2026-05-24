@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.sparse.linalg import matrix_power
 
+
 def teleporting_undirected_measure(adjacency_matrix, alpha, t, epsilon=1e-8):
     """Compute the teleporting random walk vertex measure for an undirected graph.
 
@@ -24,7 +25,11 @@ def teleporting_undirected_measure(adjacency_matrix, alpha, t, epsilon=1e-8):
     """
     is_sparse = sp.issparse(adjacency_matrix)
     N = adjacency_matrix.shape[0]
-    diags = adjacency_matrix.sum(axis=1).A1 if is_sparse else np.array(adjacency_matrix.sum(axis=1)).flatten()
+    diags = (
+        adjacency_matrix.sum(axis=1).A1
+        if is_sparse
+        else np.array(adjacency_matrix.sum(axis=1)).flatten()
+    )
 
     if np.allclose(diags, 1.0):
         P = adjacency_matrix
@@ -35,7 +40,7 @@ def teleporting_undirected_measure(adjacency_matrix, alpha, t, epsilon=1e-8):
 
     P_t = matrix_power(P.copy(), t)
 
-    nu = (np.array(((1/N) * np.ones((1, N)) @ P_t)).T.flatten())**alpha
+    nu = (np.array(((1 / N) * np.ones((1, N)) @ P_t)).T.flatten()) ** alpha
     nu[nu <= 0] = epsilon
     nu_normalized = nu / np.sum(nu)
 

@@ -2,6 +2,7 @@ from sklearn.datasets import load_wine
 from .utilities import features_to_knn
 from scipy import stats
 
+
 def wine():
     """
     Load Wine dataset.

@@ -174,7 +174,9 @@ def run_one_repeat(
     )
     if method.get("power_iteration", False):
         if time_iteration is None:
-            raise ValueError("time_iteration must be defined for power iteration methods")
+            raise ValueError(
+                "time_iteration must be defined for power iteration methods"
+            )
         power_matrix = get_power_embedding(
             operator,
             t=time_iteration,

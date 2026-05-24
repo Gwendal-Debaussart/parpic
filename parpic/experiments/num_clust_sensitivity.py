@@ -133,7 +133,9 @@ def metric_list() -> list:
     ]
 
 
-def run_for_dataset(dataset: dict, methods: list, metrics: list, num_repeats: int) -> None:
+def run_for_dataset(
+    dataset: dict, methods: list, metrics: list, num_repeats: int
+) -> None:
     """Run one dataset benchmark and write raw repeat-level outputs."""
     run_benchmark_for_dataset(
         dataset=dataset,
@@ -143,9 +145,6 @@ def run_for_dataset(dataset: dict, methods: list, metrics: list, num_repeats: in
         metrics=metrics,
         parallelize_methods=False,
     )
-
-
-
 
 
 def export_summary_json(datasets: list) -> None:

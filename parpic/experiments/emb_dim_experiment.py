@@ -57,16 +57,15 @@ def run_sensitivity_experiment(
     for method in methods:
         for dim in dimensions:
             method_dim = {
-                    **method,
-                    "n_projection_cols": dim,
-                }
+                **method,
+                "n_projection_cols": dim,
+            }
             method_dim["name"] += f"_d={dim}"
             methods_dim.append(method_dim)
     run_benchmark_for_dataset(dataset, methods_dim, num_repeats, save_dir, metrics)
 
 
 if __name__ == "__main__":
-
     methods = [
         {
             "name": "(random-proj) Parametrized Random Walk Laplacian gamma = 0.5",

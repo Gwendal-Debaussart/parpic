@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def sum_deg(A, gamma: float = 0.5, degree_normalized: bool = True) -> np.ndarray:
     """
     Compute the sum of the in-degree and out-degree for each node in a directed graph.

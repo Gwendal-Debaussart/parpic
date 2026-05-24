@@ -23,6 +23,7 @@ from .mnist import mnist
 from .email import email_eu
 import numpy as np
 
+
 def dataset_list():
     """
     Outputs a list of dataset configurations for benchmarking.
@@ -42,7 +43,7 @@ def dataset_list():
                         [0, 0.01, 0.05],
                     ]
                 ),
-            }
+            },
         },
         {
             "name": "disbm_baseline",
@@ -56,7 +57,7 @@ def dataset_list():
                         [0.01, 0.01, 0.05],
                     ]
                 ),
-            }
+            },
         },
         {
             "name": "directed_sbm_core_periphery",

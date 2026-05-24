@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def uniform_measure(A):
     """Uniform vertex measure for directed graphs.
 

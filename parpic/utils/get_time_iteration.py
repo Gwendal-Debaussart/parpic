@@ -47,7 +47,7 @@ def get_time_iteration(
     return optimal_t
 
 
-def get_time_iteration_differences(P, t_max = 250, acceleration_threshold=1e-4):
+def get_time_iteration_differences(P, t_max=250, acceleration_threshold=1e-4):
     """
     Compute diffusion time based on acceleration-based stopping criterion (PIC style).
 
@@ -74,8 +74,8 @@ def get_time_iteration_differences(P, t_max = 250, acceleration_threshold=1e-4):
 
     for t in range(3, t_max + 1):
         current_power = current_power @ P
-        diff_current = np.linalg.norm(current_power - prev_power, ord='fro')
-        diff_prev = np.linalg.norm(prev_power - prev_prev_power, ord='fro')
+        diff_current = np.linalg.norm(current_power - prev_power, ord="fro")
+        diff_prev = np.linalg.norm(prev_power - prev_prev_power, ord="fro")
         acceleration = abs(diff_current - diff_prev)
         if acceleration < acceleration_threshold:
             return t

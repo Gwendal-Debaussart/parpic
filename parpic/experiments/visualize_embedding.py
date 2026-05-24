@@ -34,7 +34,9 @@ def discover_datasets(gamma: float) -> list[str]:
     return sorted(set(datasets))
 
 
-def load_curves(dataset_name: str, gamma: float) -> tuple[list[int], np.ndarray, np.ndarray]:
+def load_curves(
+    dataset_name: str, gamma: float
+) -> tuple[list[int], np.ndarray, np.ndarray]:
     """Load dimensions, AMI means, and AMI stds from JSON outputs."""
     gamma_str = f"{gamma:g}"
     score_path = EMBED_DIR / f"ami_scores_{dataset_name}_gamma={gamma_str}.json"
@@ -78,7 +80,9 @@ def save_legend(ax, output_dir: Path, legend_name: str = "legend.pdf") -> Path:
     return legend_path
 
 
-def plot_dataset(dataset_name: str, gamma: float, output_dir: Path, show: bool) -> tuple[Path, Path]:
+def plot_dataset(
+    dataset_name: str, gamma: float, output_dir: Path, show: bool
+) -> tuple[Path, Path]:
     """Create and save the sensitivity plot for a single dataset.
 
     Returns tuple of (figure_path, legend_path).
@@ -118,7 +122,9 @@ def plot_dataset(dataset_name: str, gamma: float, output_dir: Path, show: bool) 
     ax.legend(frameon=False)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / f"embedding_dim_sensitivity_{dataset_name}_gamma={gamma:g}.pdf"
+    output_path = (
+        output_dir / f"embedding_dim_sensitivity_{dataset_name}_gamma={gamma:g}.pdf"
+    )
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
 
@@ -153,7 +159,9 @@ def main() -> None:
         default=FIGURES_DIR / "embedding_dim_sensitivity",
         help="Directory where figures are saved.",
     )
-    parser.add_argument("--show", action="store_true", help="Display figures interactively.")
+    parser.add_argument(
+        "--show", action="store_true", help="Display figures interactively."
+    )
     args = parser.parse_args()
 
     if not EMBED_DIR.exists():
@@ -167,7 +175,9 @@ def main() -> None:
 
     legend_path = None
     for i, dataset_name in enumerate(datasets):
-        output_path, legend_path = plot_dataset(dataset_name, args.gamma, args.output_dir, args.show)
+        output_path, legend_path = plot_dataset(
+            dataset_name, args.gamma, args.output_dir, args.show
+        )
         print(f"Saved: {output_path}")
         if i == 0 and legend_path:
             print(f"Saved legend: {legend_path}")

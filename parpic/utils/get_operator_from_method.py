@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def get_operator_from_method(method, A):
     """
     Given a method dictionary, return the corresponding operator function.

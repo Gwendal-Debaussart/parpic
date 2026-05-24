@@ -70,14 +70,24 @@ def _power_clustering_trial(L, y, projection_type, t, result_conn):
     ami_val = ami(y, y_pred)
     result_conn.send((elapsed, ami_val))
 
-def run_power_clustering(L: np.ndarray, y: np.ndarray, n_trials: int = 10, projection_type: str = "random", t: int = 10, time_max: float = 120):
+
+def run_power_clustering(
+    L: np.ndarray,
+    y: np.ndarray,
+    n_trials: int = 10,
+    projection_type: str = "random",
+    t: int = 10,
+    time_max: float = 120,
+):
     """Measure runtime and AMI for power-iteration clustering, with optional per-trial timeout."""
     times = []
     amis = []
     for _ in range(n_trials):
         ctx = multiprocessing.get_context("spawn")
         parent_conn, child_conn = ctx.Pipe()
-        p = ctx.Process(target=_power_clustering_trial, args=(L, y, projection_type, t, child_conn))
+        p = ctx.Process(
+            target=_power_clustering_trial, args=(L, y, projection_type, t, child_conn)
+        )
         p.start()
         p.join(timeout=time_max)
         if p.is_alive():
@@ -95,11 +105,12 @@ def run_power_clustering(L: np.ndarray, y: np.ndarray, n_trials: int = 10, proje
 
     valid_times = [t for t in times if t is not None]
     valid_amis = [a for a in amis if a is not None]
-    return (float(np.mean(valid_times)) if valid_times else None,
-            float(np.mean(valid_amis)) if valid_amis else None,
-            float(np.std(valid_amis)) if len(valid_amis) > 1 else 0.0,
-            times.count(None))
-
+    return (
+        float(np.mean(valid_times)) if valid_times else None,
+        float(np.mean(valid_amis)) if valid_amis else None,
+        float(np.std(valid_amis)) if len(valid_amis) > 1 else 0.0,
+        times.count(None),
+    )
 
 
 def _classical_spectral_trial(A, y, result_conn):
@@ -112,7 +123,10 @@ def _classical_spectral_trial(A, y, result_conn):
     ami_val = ami(y, y_pred)
     result_conn.send((elapsed, ami_val))
 
-def run_classical_spectral(A: np.ndarray, y: np.ndarray, n_trials: int = 10, time_max: float = 120):
+
+def run_classical_spectral(
+    A: np.ndarray, y: np.ndarray, n_trials: int = 10, time_max: float = 120
+):
     """Measure runtime and AMI for classical spectral + KMeans, with optional per-trial timeout."""
     times = []
     amis = []
@@ -136,10 +150,12 @@ def run_classical_spectral(A: np.ndarray, y: np.ndarray, n_trials: int = 10, tim
             amis.append(None)
     valid_times = [t for t in times if t is not None]
     valid_amis = [a for a in amis if a is not None]
-    return (float(np.mean(valid_times)) if valid_times else None,
-            float(np.mean(valid_amis)) if valid_amis else None,
-            float(np.std(valid_amis)) if len(valid_amis) > 1 else 0.0,
-            times.count(None))
+    return (
+        float(np.mean(valid_times)) if valid_times else None,
+        float(np.mean(valid_amis)) if valid_amis else None,
+        float(np.std(valid_amis)) if len(valid_amis) > 1 else 0.0,
+        times.count(None),
+    )
 
 
 def plot_runtimes(results: list, output_path: Path, show: bool):
@@ -147,7 +163,13 @@ def plot_runtimes(results: list, output_path: Path, show: bool):
     Ns = [r["N"] for r in results]
 
     fig, ax = plt.subplots(figsize=(7.5, 4.6))
-    ax.plot(Ns, [r["par_time"] for r in results], marker="o", label="ParPIC (low-dim projection)", color="#072AC8")
+    ax.plot(
+        Ns,
+        [r["par_time"] for r in results],
+        marker="o",
+        label="ParPIC (low-dim projection)",
+        color="#072AC8",
+    )
     ax.plot(
         Ns,
         [r["par_time_full"] for r in results],
@@ -156,7 +178,13 @@ def plot_runtimes(results: list, output_path: Path, show: bool):
         label="ParPIC (full projection)",
         color="#072AC8",
     )
-    ax.plot(Ns, [r["classic_time"] for r in results], marker="^", label="Classical Spectral Clustering", color="#F96C39")
+    ax.plot(
+        Ns,
+        [r["classic_time"] for r in results],
+        marker="^",
+        label="Classical Spectral Clustering",
+        color="#F96C39",
+    )
 
     ax.set_xlabel("Number of nodes (N)")
     ax.set_ylabel("Runtime (seconds)")
@@ -176,11 +204,24 @@ def plot_runtimes(results: list, output_path: Path, show: bool):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate runtime scaling plot")
-    parser.add_argument("--block_sizes", type=int, nargs="+", default=[50, 100, 200, 400, 500, 600, 800, 1000, 1500, 2000, 2500], help="Block sizes to test")
-    parser.add_argument("--n_trials", type=int, default=10, help="Number of repeated runs per graph size")
+    parser.add_argument(
+        "--block_sizes",
+        type=int,
+        nargs="+",
+        default=[50, 100, 200, 400, 500, 600, 800, 1000, 1500, 2000, 2500],
+        help="Block sizes to test",
+    )
+    parser.add_argument(
+        "--n_trials",
+        type=int,
+        default=10,
+        help="Number of repeated runs per graph size",
+    )
     parser.add_argument("--t", type=int, default=10, help="Power iteration depth")
     parser.add_argument("--show", action="store_true", help="Show figure window")
-    parser.add_argument("--output", type=str, default=None, help="Optional output path for PDF")
+    parser.add_argument(
+        "--output", type=str, default=None, help="Optional output path for PDF"
+    )
     args = parser.parse_args()
 
     results = []
@@ -188,15 +229,26 @@ def main():
         print(f"Running for block size = {b} (N = {3 * b})")
         A, _, L_par, y = generate_graph(b)
         A_sym = (A + A.T) / 2.0
-        time_par, ami_par, std_par, n_timeouts_par = run_power_clustering(L_par, y, n_trials=args.n_trials, projection_type="random", t=args.t, time_max=10)
-        time_classic, ami_classic, std_classic, n_timeouts_classic = run_classical_spectral(A_sym, y, n_trials=args.n_trials, time_max=10)
-        time_par_full, ami_par_full, std_par_full, n_timeouts_par_full = run_power_clustering(
+        time_par, ami_par, std_par, n_timeouts_par = run_power_clustering(
             L_par,
             y,
             n_trials=args.n_trials,
-            projection_type="full",
+            projection_type="random",
             t=args.t,
-            time_max=10
+            time_max=10,
+        )
+        time_classic, ami_classic, std_classic, n_timeouts_classic = (
+            run_classical_spectral(A_sym, y, n_trials=args.n_trials, time_max=10)
+        )
+        time_par_full, ami_par_full, std_par_full, n_timeouts_par_full = (
+            run_power_clustering(
+                L_par,
+                y,
+                n_trials=args.n_trials,
+                projection_type="full",
+                t=args.t,
+                time_max=10,
+            )
         )
 
         results.append(
@@ -211,13 +263,11 @@ def main():
             }
         )
 
-    output_path = Path(args.output) if args.output else FIGURES_DIR / "scaling_runtime.pdf"
-
-    json.dump(
-        results,
-        open("scaling_directed_sbm.json", "w"),
-        indent=4
+    output_path = (
+        Path(args.output) if args.output else FIGURES_DIR / "scaling_runtime.pdf"
     )
+
+    json.dump(results, open("scaling_directed_sbm.json", "w"), indent=4)
     plot_runtimes(results=results, output_path=output_path, show=args.show)
 
 

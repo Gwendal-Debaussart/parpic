@@ -109,29 +109,27 @@ def benchark_to_tex(
     )
 
     dataset_header = (
-        " & ".join(alternative_dataset_name(d["name"]) for d in dataset_list)
-        + r" \\"
+        " & ".join(alternative_dataset_name(d["name"]) for d in dataset_list) + r" \\"
     )
     header += dataset_header + "\n\\Xhline{0.75pt}\n"
 
-    footer = (
-        r"""
+    footer = r"""
     \Xhline{1pt}
     \end{tabular}
       \end{adjustbox}
       \caption{\textbf{%s results across multiple datasets.} The best mean per dataset is in bold (\mybest{xxx}), the second-best is underlined (\mysecond{xxx}). Standard deviations appear in parentheses via \mystd{xxx}.}
       \label{tab:results_combined}
     \end{table*}
-    """
-        % metric.title()
-    )
+    """ % metric.title()
 
     all_dfs = []
     for d in dataset_list:
-        df = pd.read_csv(os.path.join(results_dir, f"{d["name"]}__formatted.csv"))
+        df = pd.read_csv(os.path.join(results_dir, f"{d['name']}__formatted.csv"))
         df = df[df["metric"] == metric]
         all_dfs.append(
-            df.rename(columns={"mean_val": f"{d["name"]}_mean", "std_val": f"{d["name"]}_std"})
+            df.rename(
+                columns={"mean_val": f"{d['name']}_mean", "std_val": f"{d['name']}_std"}
+            )
         )
     combined = all_dfs[0]
     for df in all_dfs[1:]:
@@ -139,33 +137,32 @@ def benchark_to_tex(
 
     combined = combined[combined["method"].isin(method_list)].copy()
     for d in dataset_list:
-        means = combined[f"{d["name"]}_mean"]
+        means = combined[f"{d['name']}_mean"]
         if means.notna().any():
             sorted_idx = means.sort_values(ascending=False).index
             if len(sorted_idx) > 0:
-                combined.loc[sorted_idx[0], f"{d["name"]}_style"] = "best"
+                combined.loc[sorted_idx[0], f"{d['name']}_style"] = "best"
             if len(sorted_idx) > 1:
-                combined.loc[sorted_idx[1], f"{d["name"]}_style"] = "second"
+                combined.loc[sorted_idx[1], f"{d['name']}_style"] = "second"
     rows = []
     for _, row in combined.iterrows():
-      method_label = alternative_method_name(row["method"])
-      row_entries = [method_label]
-      for d in dataset_list:
-          mean = row.get(f"{d["name"]}_mean", float("nan"))
-          std = row.get(f"{d["name"]}_std", float("nan"))
-          style = row.get(f"{d["name"]}_style", "")
-          bold = style == "best"
-          second = style == "second"
-          formatted = format_result(
-              mean, std, bold=bold, second=second, percentage=percentage
-          )
-          row_entries.append(formatted)
-      rows.append(" & ".join(row_entries) + r" \\")
+        method_label = alternative_method_name(row["method"])
+        row_entries = [method_label]
+        for d in dataset_list:
+            mean = row.get(f"{d['name']}_mean", float("nan"))
+            std = row.get(f"{d['name']}_std", float("nan"))
+            style = row.get(f"{d['name']}_style", "")
+            bold = style == "best"
+            second = style == "second"
+            formatted = format_result(
+                mean, std, bold=bold, second=second, percentage=percentage
+            )
+            row_entries.append(formatted)
+        rows.append(" & ".join(row_entries) + r" \\")
 
-      body = "\n".join(rows)
-      latex_code = header + body + footer
+        body = "\n".join(rows)
+        latex_code = header + body + footer
     with open(output_dir + f"benchmark_{metric}.tex", "w") as f:
         f.write(latex_code)
 
     print(f"LaTeX table saved to {output_dir + f'benchmark_{metric}.tex'}")
-

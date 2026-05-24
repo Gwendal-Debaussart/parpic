@@ -31,7 +31,9 @@ def discover_dataset_gamma_pairs(results_dir: Path) -> list[tuple[str, float]]:
     return sorted(pairs)
 
 
-def load_time_curve(dataset_name: str, gamma: float, results_dir: Path) -> tuple[list[int], np.ndarray, np.ndarray]:
+def load_time_curve(
+    dataset_name: str, gamma: float, results_dir: Path
+) -> tuple[list[int], np.ndarray, np.ndarray]:
     """Load time-sensitivity curve (t, means, stds) for a dataset-gamma pair."""
     gamma_str = f"{gamma:g}"
     score_path = results_dir / f"ami_scores_{dataset_name}_gamma={gamma_str}.json"
@@ -48,7 +50,9 @@ def load_time_curve(dataset_name: str, gamma: float, results_dir: Path) -> tuple
     return t_values, means, stds
 
 
-def get_time_recommendation(dataset_name: str, gamma: float) -> tuple[float | None, float | None]:
+def get_time_recommendation(
+    dataset_name: str, gamma: float
+) -> tuple[float | None, float | None]:
     """Compute time recommendations (parametrized_laplacian, diff). Returns (t_ours, t_diff) or (None, None) if not available."""
     try:
         from benchmarks.load import load_dataset
@@ -69,6 +73,7 @@ def get_time_recommendation(dataset_name: str, gamma: float) -> tuple[float | No
         t_ours = get_time_iteration(Lds, t_max=250)
         try:
             from utils.get_time_iteration import get_time_iteration_differences
+
             t_diff = get_time_iteration_differences(P, t_max=250)
         except (ImportError, AttributeError):
             t_diff = None
@@ -118,6 +123,7 @@ def plot_time_curve(
     t_diff = None
     try:
         from benchmarks.load import load_dataset
+
         A, _, _ = load_dataset(dataset_name)
         n = A.shape[0]
         t_ours, t_diff = get_time_recommendation(dataset_name, gamma)
@@ -226,7 +232,9 @@ def main() -> None:
         default=FIGURES_DIR / "t_sensitivity",
         help="Directory where PDF plots are saved.",
     )
-    parser.add_argument("--show", action="store_true", help="Display plots interactively.")
+    parser.add_argument(
+        "--show", action="store_true", help="Display plots interactively."
+    )
     args = parser.parse_args()
 
     if not args.results_dir.exists():

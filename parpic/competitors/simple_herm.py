@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def simple_herm(A: np.ndarray, d: int) -> np.ndarray:
     """
     Compute the simple Hermitian matrix of A.
@@ -21,9 +22,9 @@ def simple_herm(A: np.ndarray, d: int) -> np.ndarray:
     M = M + M.conj().T
 
     out_deg = np.sum(A, axis=1)
-    in_deg  = np.sum(A, axis=0)
+    in_deg = np.sum(A, axis=0)
     degrees = out_deg + in_deg
     degrees[degrees == 0] = 1
     D_inv_sqrt = np.diag(1.0 / np.sqrt(degrees))
 
-    return  (np.eye(A.shape[0]) - D_inv_sqrt @ M @ D_inv_sqrt)
+    return np.eye(A.shape[0]) - D_inv_sqrt @ M @ D_inv_sqrt

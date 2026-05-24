@@ -2,6 +2,7 @@ from torch_geometric.datasets import Amazon
 import numpy as np
 import os
 
+
 def amazon() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Load the Amazon Computers dataset from PyTorch Geometric.

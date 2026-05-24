@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def sym_matrix(A: np.ndarray) -> np.ndarray:
     """
     Compute the symmetric normalized stochastic complement of W.

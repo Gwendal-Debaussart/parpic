@@ -18,7 +18,8 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 TABLES_DIR = BASE_DIR / "tables"
 RHO_DIR = TABLES_DIR / "rho_sensitivity"
 
-DISBM_TYPE = "cp" # "cp" or "chain"
+DISBM_TYPE = "cp"  # "cp" or "chain"
+
 
 def process_single_run(args):
     """Process a single run for both symmetric and parametrized embeddings."""
@@ -64,13 +65,11 @@ def process_parameter_combination(first_block_size, rho, verbose=1):
     D_inv = np.diag(1 / diags)
     P = D_inv @ A
 
-
     A_sym_norm = (A + A.T) / 2.0
     d_sym = np.asarray(A_sym_norm.sum(axis=1)).flatten()
     d_sym[d_sym == 0] = 1e-10
     D_inv_sym = np.diag(1 / d_sym)
     L_sym = D_inv_sym @ A_sym_norm
-
 
     gamma_val = 0.5
     nu = sum_deg(A, gamma=gamma_val, degree_normalized=True)
@@ -97,7 +96,9 @@ def process_parameter_combination(first_block_size, rho, verbose=1):
     std_ami_par = np.std(ami_scores_par)
 
     if verbose:
-        print(f"rho: {rho}, first_block: {first_block_size} reciprocity: {reciprocity:.4f}")
+        print(
+            f"rho: {rho}, first_block: {first_block_size} reciprocity: {reciprocity:.4f}"
+        )
         print(f"select times: :(t_sym={t_sym}, t_par={t_par})")
         print("---------------------------------")
         print(f"(symmetric) AMI scores over 10 runs: {mean_ami_sym} +- {std_ami_sym}")
@@ -105,12 +106,12 @@ def process_parameter_combination(first_block_size, rho, verbose=1):
         print("================================")
 
     return {
-        'first_block_size': first_block_size,
-        'rho': rho,
-        'mean_ami_par': mean_ami_par,
-        'std_ami_par': std_ami_par,
-        'mean_ami_sym': mean_ami_sym,
-        'std_ami_sym': std_ami_sym
+        "first_block_size": first_block_size,
+        "rho": rho,
+        "mean_ami_par": mean_ami_par,
+        "std_ami_par": std_ami_par,
+        "mean_ami_sym": mean_ami_sym,
+        "std_ami_sym": std_ami_sym,
     }
 
 
@@ -119,43 +120,67 @@ def main(verbose=1):
     rho_means = {}
     rho_stds = {}
     if DISBM_TYPE == "cp":
-        first_block_size_list = [40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 500, 600, 700, 800]
+        first_block_size_list = [
+            40,
+            80,
+            120,
+            160,
+            200,
+            240,
+            280,
+            320,
+            360,
+            400,
+            500,
+            600,
+            700,
+            800,
+        ]
     else:
         first_block_size_list = [500]
     rho_list = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
 
-    param_combinations = [(first_block_size, rho)
-                          for first_block_size in first_block_size_list
-                          for rho in rho_list]
+    param_combinations = [
+        (first_block_size, rho)
+        for first_block_size in first_block_size_list
+        for rho in rho_list
+    ]
 
     max_workers = min(os.cpu_count(), len(param_combinations))
     max_workers = max_workers // 4 if max_workers >= 4 else max_workers
     if verbose:
-        print(f"Processing {len(param_combinations)} parameter combinations with {max_workers} workers...")
+        print(
+            f"Processing {len(param_combinations)} parameter combinations with {max_workers} workers..."
+        )
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(process_parameter_combination, fbs, r, verbose): (fbs, r)
-                   for fbs, r in param_combinations}
+        futures = {
+            executor.submit(process_parameter_combination, fbs, r, verbose): (fbs, r)
+            for fbs, r in param_combinations
+        }
 
         for future in as_completed(futures):
             result = future.result()
-            first_block_size = result['first_block_size']
-            rho = result['rho']
+            first_block_size = result["first_block_size"]
+            rho = result["rho"]
 
-            rho_means[f"par_{rho}_{first_block_size}"] = result['mean_ami_par']
-            rho_means[f"sym_{rho}_{first_block_size}"] = result['mean_ami_sym']
-            rho_stds[f"par_{rho}_{first_block_size}"] = result['std_ami_par']
-            rho_stds[f"sym_{rho}_{first_block_size}"] = result['std_ami_sym']
+            rho_means[f"par_{rho}_{first_block_size}"] = result["mean_ami_par"]
+            rho_means[f"sym_{rho}_{first_block_size}"] = result["mean_ami_sym"]
+            rho_stds[f"par_{rho}_{first_block_size}"] = result["std_ami_par"]
+            rho_stds[f"sym_{rho}_{first_block_size}"] = result["std_ami_sym"]
 
     np.save(RHO_DIR / f"{DISBM_TYPE}_rho_means.npy", rho_means)
     np.save(RHO_DIR / f"{DISBM_TYPE}_rho_stds.npy", rho_stds)
     if verbose:
-        print(f"Results saved to {RHO_DIR / f'{DISBM_TYPE}_rho_means.npy'} and {RHO_DIR / f'{DISBM_TYPE}_rho_stds.npy'}")
+        print(
+            f"Results saved to {RHO_DIR / f'{DISBM_TYPE}_rho_means.npy'} and {RHO_DIR / f'{DISBM_TYPE}_rho_stds.npy'}"
+        )
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Rho sensitivity experiment')
-    parser.add_argument('--verbose', type=int, default=1,
-                        help='Verbosity level (0=silent, 1=default)')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Rho sensitivity experiment")
+    parser.add_argument(
+        "--verbose", type=int, default=1, help="Verbosity level (0=silent, 1=default)"
+    )
     args = parser.parse_args()
     main(verbose=args.verbose)

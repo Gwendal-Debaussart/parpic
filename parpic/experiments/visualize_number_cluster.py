@@ -28,6 +28,7 @@ def get_series(prefixes, k_values):
             return [cluster_means[key] for key in keys]
     return None
 
+
 fig, ax = plt.subplots()
 
 sym_series = get_series(["sym"], num_clusters_list)
@@ -48,5 +49,8 @@ ax.set_xlabel("Number of Clusters")
 ax.set_ylabel("AMI")
 ax.legend(fontsize="15")
 FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-plt.savefig(FIGURES_DIR / f"num_clusters_sensitivity_disbm_{MODEL_TYPE}.pdf", bbox_inches='tight')
+plt.savefig(
+    FIGURES_DIR / f"num_clusters_sensitivity_disbm_{MODEL_TYPE}.pdf",
+    bbox_inches="tight",
+)
 plt.tight_layout()

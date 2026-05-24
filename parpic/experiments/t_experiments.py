@@ -12,6 +12,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parents[1]
 TABLES_DIR = BASE_DIR / "tables"
 
+
 def get_t_range(n: int, num_points: int = 15) -> list:
     """
     Get a log-ish spaced range of embedding dimensions.
@@ -30,6 +31,7 @@ def get_t_range(n: int, num_points: int = 15) -> list:
     dims = sorted(set(int(round(d)) for d in log_dims))
     dims = [d for d in dims if 1 <= d < n]
     return dims
+
 
 def sensitivity_experiment_per_dataset(
     dataset,
@@ -67,7 +69,9 @@ def sensitivity_experiment_per_dataset(
     adjacency_matrix, _, _ = load_dataset(
         dataset["function"], **dataset.get("parameters", {})
     )
-    ts = get_t_range(adjacency_matrix.shape[0], num_points = adjacency_matrix.shape[0] // 5)
+    ts = get_t_range(
+        adjacency_matrix.shape[0], num_points=adjacency_matrix.shape[0] // 5
+    )
     for method in methods:
         for gamma in gammas:
             for t in ts:
@@ -108,7 +112,15 @@ if __name__ == "__main__":
         },
     ]
     datasets = dataset_list()
-    include = ["polblogs", "iris", "segmentataion", "glass", "wine", "directed_sbm_hub", "directed_sbm_core_periphery"]
+    include = [
+        "polblogs",
+        "iris",
+        "segmentataion",
+        "glass",
+        "wine",
+        "directed_sbm_hub",
+        "directed_sbm_core_periphery",
+    ]
     datasets = [d for d in datasets if d["name"] in include]
     n_cores = multiprocessing.cpu_count()
     n_jobs = max(8, n_cores // 4)

@@ -27,6 +27,7 @@ def features_to_knn(features: np.ndarray) -> np.ndarray:
     )
     return knn_graph.toarray()
 
+
 def load_dataset_from_local(name: str):
     """
     Load a dataset from the local disk.

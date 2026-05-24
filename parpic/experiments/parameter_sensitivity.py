@@ -17,6 +17,7 @@ Sensitivity experiments for varying gamma and t
 Checking how this works out, plot heatmaps afterwards
 """
 
+
 def get_t_range(n: int, num_points: int = 15) -> list:
     """
     Get a log-ish spaced range of embedding dimensions.
@@ -32,6 +33,7 @@ def get_t_range(n: int, num_points: int = 15) -> list:
     dims = sorted(set(int(round(d)) for d in log_dims))
     dims = [d for d in dims if 1 <= d < n]
     return dims
+
 
 def sensitivity_experiment_per_dataset(
     dataset,
@@ -69,7 +71,9 @@ def sensitivity_experiment_per_dataset(
     adjacency_matrix, _, _ = load_dataset(
         dataset["function"], **dataset.get("parameters", {})
     )
-    ts = get_t_range(adjacency_matrix.shape[0], num_points = min(adjacency_matrix.shape[0] // 5, 100))
+    ts = get_t_range(
+        adjacency_matrix.shape[0], num_points=min(adjacency_matrix.shape[0] // 5, 100)
+    )
     ts = range(1, 51)
     os.makedirs(save_dir, exist_ok=True)
     for method in methods:

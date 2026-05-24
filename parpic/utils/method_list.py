@@ -29,6 +29,7 @@ from vertex_measures import sum_deg
 from vertex_measures.harmonic_degree import harmonic_degree_measure
 from competitors.utils import teleporting_rw
 
+
 def method_list():
     methods = [
         {
@@ -52,10 +53,10 @@ def method_list():
             "params": {},
         },
         {
-          "name": "DSC-plus",
-          "function": dsc_plus,
-          "input_type": "adjacency",
-          "decomposition": "eigen",
+            "name": "DSC-plus",
+            "function": dsc_plus,
+            "input_type": "adjacency",
+            "decomposition": "eigen",
         },
         {
             "name": "Hermitian Adjacency",
@@ -72,53 +73,52 @@ def method_list():
             "params": {"normalized": True},
         },
         {
-          "name": "PR-SC",
-          "function": teleporting_rw,
-          "input_type": "adjacency",
-          "decomposition": "eigen",
+            "name": "PR-SC",
+            "function": teleporting_rw,
+            "input_type": "adjacency",
+            "decomposition": "eigen",
         },
-        #------- pic-like algorithms -------
+        # ------- pic-like algorithms -------
         {
-          'name': '(full) N-PIC',
-          'function': lambda A: A,
-          "input_type": "transition",
-          "power_iteration": True,
-        },
-        {
-          "name": "(random-proj) N-PIC",
-          "function": lambda A: A,
-          "input_type": "transition",
-          "projection_type": "random",
-          "power_iteration": True,
+            "name": "(full) N-PIC",
+            "function": lambda A: A,
+            "input_type": "transition",
+            "power_iteration": True,
         },
         {
-          "name": "(full) S-PIC",
-          "function": sym_matrix,
-          "input_type": "transition",
-          "power_iteration": True,
+            "name": "(random-proj) N-PIC",
+            "function": lambda A: A,
+            "input_type": "transition",
+            "projection_type": "random",
+            "power_iteration": True,
         },
         {
-          "name": "(full) PR-PIC",
-          "function": teleporting_rw,
-          "input_type": "adjacency",
-          "power_iteration": True,
+            "name": "(full) S-PIC",
+            "function": sym_matrix,
+            "input_type": "transition",
+            "power_iteration": True,
         },
         {
-          "name": "(random-proj) S-PIC",
-          "function": sym_matrix,
-          "input_type": "adjacency",
-          "projection_type": "random",
-          "power_iteration": True,
+            "name": "(full) PR-PIC",
+            "function": teleporting_rw,
+            "input_type": "adjacency",
+            "power_iteration": True,
         },
         {
-          "name": "(random-proj) PR-PIC",
-          "function": teleporting_rw,
-          "input_type": "adjacency",
-          "projection_type": "random",
-          "power_iteration": True,
+            "name": "(random-proj) S-PIC",
+            "function": sym_matrix,
+            "input_type": "adjacency",
+            "projection_type": "random",
+            "power_iteration": True,
         },
-
-        #------- parametrized random walk laplacians -------
+        {
+            "name": "(random-proj) PR-PIC",
+            "function": teleporting_rw,
+            "input_type": "adjacency",
+            "projection_type": "random",
+            "power_iteration": True,
+        },
+        # ------- parametrized random walk laplacians -------
         {
             "name": "(full) Parametrized Random Walk Laplacian gamma = 0.5",
             "function": parametrized_laplacian,
@@ -162,11 +162,11 @@ def method_list():
             "vertex_measure": {"function": sum_deg, "params": {"gamma": 0.25}},
         },
         {
-          "name": "(random-proj) S-PIC-ADJ",
-          "projection_type": "random",
-          "power_iteration": True,
-          "function": sym_matrix,
-          "input_type": "adjacency",
+            "name": "(random-proj) S-PIC-ADJ",
+            "projection_type": "random",
+            "power_iteration": True,
+            "function": sym_matrix,
+            "input_type": "adjacency",
         },
         {
             "name": "SC Parametrized Random Walk Laplacian gamma = 0.5",

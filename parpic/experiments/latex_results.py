@@ -112,35 +112,34 @@ def benchark_to_tex(
     os.makedirs(output_dir, exist_ok=True)
 
     tab_cols = "c" * len(dataset_list)
-    header = (
-        r"""\begin{table*}
+    header = r"""\begin{table*}
         \centering
         \begin{adjustbox}{width=\linewidth,center}
         \begin{tabular}{l|c|%s}
         \Xhline{1pt}
         \textbf{Methods} & \textbf{PRB} & %s \\
         \Xhline{0.75pt}
-        """
-        % (tab_cols, " & ".join(alternative_dataset_name(d["name"]) for d in dataset_list))
+        """ % (
+        tab_cols,
+        " & ".join(alternative_dataset_name(d["name"]) for d in dataset_list),
     )
 
-    footer = (
-        r"""\Xhline{1pt}
+    footer = r"""\Xhline{1pt}
         \end{tabular}
           \end{adjustbox}
           \caption{\textbf{%s results across multiple datasets.} The best mean per dataset is in bold (\\mybest{xxx}), the second-best is underlined (\\mysecond{xxx}). Standard deviations appear in parentheses via \\mystd{xxx}.}
           \label{tab:results_combined}
         \end{table*}
-        """
-        % metric.title()
-    )
+        """ % metric.title()
 
     all_dfs = []
     for d in dataset_list:
         df = pd.read_csv(os.path.join(results_dir, f"{d['name']}__formatted.csv"))
         df = df[df["metric"] == metric]
         all_dfs.append(
-            df.rename(columns={"mean_val": f"{d['name']}_mean", "std_val": f"{d['name']}_std"})
+            df.rename(
+                columns={"mean_val": f"{d['name']}_mean", "std_val": f"{d['name']}_std"}
+            )
         )
     cols_to_drop = ["metric", "repeat_tol"]
 
@@ -183,24 +182,26 @@ def benchark_to_tex(
 
     rows = []
     for _, row in combined.iterrows():
-      method_label = alternative_method_name(row["method"])
-      row_entries = [method_label]
+        method_label = alternative_method_name(row["method"])
+        row_entries = [method_label]
 
-      prb_mean = row.get("PRB_mean", float("nan"))
-      prb_std = row.get("PRB_std", float("nan"))
-      prb_formatted = format_result(prb_mean, prb_std,bold=False, second=False, percentage=False)
-      row_entries.append(prb_formatted)
-      for d in dataset_list:
-          mean = row.get(f"{d['name']}_mean", float("nan"))
-          std = row.get(f"{d['name']}_std", float("nan"))
-          style = row.get(f"{d['name']}_style", "")
-          bold = style == "best"
-          second = style == "second"
-          formatted = format_result(
-              mean, std, bold=bold, second=second, percentage=percentage
-          )
-          row_entries.append(formatted)
-      rows.append(" & ".join(row_entries) + r" \\")
+        prb_mean = row.get("PRB_mean", float("nan"))
+        prb_std = row.get("PRB_std", float("nan"))
+        prb_formatted = format_result(
+            prb_mean, prb_std, bold=False, second=False, percentage=False
+        )
+        row_entries.append(prb_formatted)
+        for d in dataset_list:
+            mean = row.get(f"{d['name']}_mean", float("nan"))
+            std = row.get(f"{d['name']}_std", float("nan"))
+            style = row.get(f"{d['name']}_style", "")
+            bold = style == "best"
+            second = style == "second"
+            formatted = format_result(
+                mean, std, bold=bold, second=second, percentage=percentage
+            )
+            row_entries.append(formatted)
+        rows.append(" & ".join(row_entries) + r" \\")
 
     body = "\n".join(rows)
     latex_code = header + body + footer
@@ -224,8 +225,17 @@ def main() -> None:
     parser.add_argument(
         "--exclude-datasets",
         nargs="+",
-        default=["cornell", "texas", "wisconsin", "citeseer", "pubmed", "mnist",
-                 "directed_sbm", "directed_sbm_chain", "karate_club"],
+        default=[
+            "cornell",
+            "texas",
+            "wisconsin",
+            "citeseer",
+            "pubmed",
+            "mnist",
+            "directed_sbm",
+            "directed_sbm_chain",
+            "karate_club",
+        ],
         help="Dataset names to exclude.",
     )
     parser.add_argument(
@@ -260,20 +270,21 @@ def main() -> None:
     args = parser.parse_args()
     all_datasets = dataset_list()
     filtered_datasets = [
-        d for d in all_datasets
-        if d["name"] not in args.exclude_datasets
+        d for d in all_datasets if d["name"] not in args.exclude_datasets
     ]
     if args.datasets:
-        filtered_datasets = [
-            d for d in filtered_datasets
-            if d["name"] in args.datasets
-        ]
+        filtered_datasets = [d for d in filtered_datasets if d["name"] in args.datasets]
     else:
-        default_datasets = ["polblogs", "disbm_baseline", "directed_sbm_core_periphery",
-                           "email_eu", "chain_sbm", "cora"]
+        default_datasets = [
+            "polblogs",
+            "disbm_baseline",
+            "directed_sbm_core_periphery",
+            "email_eu",
+            "chain_sbm",
+            "cora",
+        ]
         filtered_datasets = [
-            d for d in filtered_datasets
-            if d["name"] in default_datasets
+            d for d in filtered_datasets if d["name"] in default_datasets
         ]
 
     all_methods = method_list()

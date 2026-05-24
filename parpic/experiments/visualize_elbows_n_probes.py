@@ -51,8 +51,12 @@ def compute_elbows(P: np.ndarray, t_max: int, n_probes: int):
     entropy_approx = -diffusion_entropy(P, max_t=t_max, n_probes=n_probes)
 
     t_axis = np.arange(1, t_max + 1)
-    knee_exact = KneeLocator(t_axis, entropy_exact, curve="concave", direction="increasing").knee
-    knee_approx = KneeLocator(t_axis, entropy_approx, curve="concave", direction="increasing").knee
+    knee_exact = KneeLocator(
+        t_axis, entropy_exact, curve="concave", direction="increasing"
+    ).knee
+    knee_approx = KneeLocator(
+        t_axis, entropy_approx, curve="concave", direction="increasing"
+    ).knee
     return t_axis, entropy_exact, entropy_approx, knee_exact, knee_approx
 
 
@@ -86,12 +90,28 @@ def plot_elbow(
     """Save elbow plot for one dataset. Returns legend path if extracted."""
     fig, ax = plt.subplots(figsize=(7, 4.2))
     ax.plot(t_axis, entropy_exact, label="Exact Entropy", c="#072AC8")
-    ax.plot(t_axis, entropy_approx, linestyle="--", label="Approximated Entropy", c="#F96C39")
+    ax.plot(
+        t_axis,
+        entropy_approx,
+        linestyle="--",
+        label="Approximated Entropy",
+        c="#F96C39",
+    )
 
     if knee_exact is not None:
-        ax.axvline(x=knee_exact, color="#D90429", linestyle="-", label=f"Knee Exact: {knee_exact}")
+        ax.axvline(
+            x=knee_exact,
+            color="#D90429",
+            linestyle="-",
+            label=f"Knee Exact: {knee_exact}",
+        )
     if knee_approx is not None:
-        ax.axvline(x=knee_approx, color="#2B9348", linestyle=":", label=f"Knee Approx: {knee_approx}")
+        ax.axvline(
+            x=knee_approx,
+            color="#2B9348",
+            linestyle=":",
+            label=f"Knee Approx: {knee_approx}",
+        )
 
     ax.set_title(dataset_name)
     ax.set_xlabel("Time step t")
@@ -156,9 +176,15 @@ def run_dataset(dataset_cfg: dict, t_max: int, use_wcc: bool) -> tuple[dict, Pat
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate elbow plots for all benchmark datasets")
+    parser = argparse.ArgumentParser(
+        description="Generate elbow plots for all benchmark datasets"
+    )
     parser.add_argument("--t_max", type=int, default=50, help="Maximum diffusion time")
-    parser.add_argument("--wcc", action="store_true", help="Restrict each dataset to its largest weakly connected component")
+    parser.add_argument(
+        "--wcc",
+        action="store_true",
+        help="Restrict each dataset to its largest weakly connected component",
+    )
     args = parser.parse_args()
 
     datasets = [d for d in dataset_list() if d["function"] in dataset_list_functions()]
@@ -167,7 +193,9 @@ def main():
 
     for i, dataset_cfg in enumerate(datasets):
         try:
-            summary, lex_path = run_dataset(dataset_cfg=dataset_cfg, t_max=args.t_max, use_wcc=args.wcc)
+            summary, lex_path = run_dataset(
+                dataset_cfg=dataset_cfg, t_max=args.t_max, use_wcc=args.wcc
+            )
             summaries.append(summary)
             if i == 0:
                 legend_path = lex_path
@@ -178,7 +206,9 @@ def main():
             print(f"[WARN] Failed for dataset '{dataset_cfg['name']}': {exc}")
 
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
-    summary_file = TABLES_DIR / ("elbows_n_probes_wcc.json" if args.wcc else "elbows_n_probes.json")
+    summary_file = TABLES_DIR / (
+        "elbows_n_probes_wcc.json" if args.wcc else "elbows_n_probes.json"
+    )
     with open(summary_file, "w") as f:
         json.dump(summaries, f, indent=2)
 
