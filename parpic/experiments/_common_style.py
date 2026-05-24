@@ -19,7 +19,7 @@ def get_method_style(method_label: str) -> dict:
 	)
 
 
-BLUE_ORANGE_COLORS = ["#072AC8", "#6F42C1", "#F96C39"]
+BLUE_ORANGE_COLORS = ["#072AC8", "#9A44C5", "#ff459c", "#F96C39"]
 BLUE_ORANGE_CMAP = LinearSegmentedColormap.from_list(
 	"blue_orange", BLUE_ORANGE_COLORS, N=256
 )

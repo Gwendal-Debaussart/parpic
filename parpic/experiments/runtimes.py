@@ -12,6 +12,8 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_mutual_info_score as ami
 import json
+from utils.get_embedding import get_embedding
+import multiprocessing
 import sys
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -58,9 +60,6 @@ def generate_graph(block_size: int):
     return A, L_sym, L_par, np.asarray(y)
 
 
-
-import multiprocessing
-
 def _power_clustering_trial(L, y, projection_type, t, result_conn):
     n_clusters = len(np.unique(y))
     start = time.time()
@@ -75,7 +74,6 @@ def run_power_clustering(L: np.ndarray, y: np.ndarray, n_trials: int = 10, proje
     """Measure runtime and AMI for power-iteration clustering, with optional per-trial timeout."""
     times = []
     amis = []
-    n_clusters = len(np.unique(y))
     for _ in range(n_trials):
         ctx = multiprocessing.get_context("spawn")
         parent_conn, child_conn = ctx.Pipe()
@@ -94,7 +92,7 @@ def run_power_clustering(L: np.ndarray, y: np.ndarray, n_trials: int = 10, proje
         else:
             times.append(None)
             amis.append(None)
-    # Filter out None values
+
     valid_times = [t for t in times if t is not None]
     valid_amis = [a for a in amis if a is not None]
     return (float(np.mean(valid_times)) if valid_times else None,
@@ -105,10 +103,6 @@ def run_power_clustering(L: np.ndarray, y: np.ndarray, n_trials: int = 10, proje
 
 
 def _classical_spectral_trial(A, y, result_conn):
-    import time
-    from sklearn.cluster import KMeans
-    from utils.get_embedding import get_embedding
-    from sklearn.metrics import adjusted_mutual_info_score as ami
     n_clusters = len(np.unique(y))
     start = time.time()
     emb = get_embedding(A, dim=n_clusters, method="eigen")
@@ -122,7 +116,6 @@ def run_classical_spectral(A: np.ndarray, y: np.ndarray, n_trials: int = 10, tim
     """Measure runtime and AMI for classical spectral + KMeans, with optional per-trial timeout."""
     times = []
     amis = []
-    n_clusters = len(np.unique(y))
     for _ in range(n_trials):
         ctx = multiprocessing.get_context("spawn")
         parent_conn, child_conn = ctx.Pipe()
@@ -195,8 +188,6 @@ def main():
         print(f"Running for block size = {b} (N = {3 * b})")
         A, _, L_par, y = generate_graph(b)
         A_sym = (A + A.T) / 2.0
-
-
         time_par, ami_par, std_par, n_timeouts_par = run_power_clustering(L_par, y, n_trials=args.n_trials, projection_type="random", t=args.t, time_max=10)
         time_classic, ami_classic, std_classic, n_timeouts_classic = run_classical_spectral(A_sym, y, n_trials=args.n_trials, time_max=10)
         time_par_full, ami_par_full, std_par_full, n_timeouts_par_full = run_power_clustering(
