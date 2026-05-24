@@ -21,6 +21,7 @@ def features_to_knn(features: np.ndarray) -> np.ndarray:
         Adjacency matrix of the kNN graph, shape (n_samples, n_samples).
     """
 
+    features = np.asarray(features)
     k = int(np.ceil(np.log(features.shape[0])))
     knn_graph = kneighbors_graph(
         features, n_neighbors=k, mode="connectivity", include_self=False
@@ -44,6 +45,6 @@ def load_dataset_from_local(name: str):
     path = os.path.dirname(os.path.abspath(__file__))
     data = load_from_disk(os.path.join(path, "source/", name))
     df_new = data.with_format("numpy")
-    features = df_new["train"]["data"]
-    labels = df_new["train"]["labels"]
+    features = np.asarray(df_new["train"]["data"])
+    labels = np.asarray(df_new["train"]["labels"])
     return features, labels

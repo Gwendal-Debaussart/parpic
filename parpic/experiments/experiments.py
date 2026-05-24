@@ -1,5 +1,6 @@
 import multiprocessing
 from pathlib import Path
+import sys
 from benchmarks.load import dataset_list
 from utils.method_list import method_list
 from utils.run_benchmark import run_benchmark_for_dataset
@@ -13,6 +14,9 @@ from sklearn.metrics import (
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 TABLES_DIR = BASE_DIR / "tables"
+PROJECT_ROOT = BASE_DIR
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def run_benchmark(
