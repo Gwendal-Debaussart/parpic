@@ -1,0 +1,7 @@
+__pycache__/
+figures/
+data/
+tables/
+source/
+
+exp.ipynb
