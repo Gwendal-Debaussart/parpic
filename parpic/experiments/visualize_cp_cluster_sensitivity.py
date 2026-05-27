@@ -93,7 +93,6 @@ def plot_heatmap(results_dict, output_dir=str(FIGURES_DIR / "cp_cluster_sensitiv
             cbar_kws={"label": "Mean AMI Score"} if method_key == "sym" else {},
             ax=ax,
         )
-
         if method_key == "param":
             divider = make_axes_locatable(ax)
             cax = divider.append_axes("right", size="5%", pad=0.1)
@@ -107,6 +106,7 @@ def plot_heatmap(results_dict, output_dir=str(FIGURES_DIR / "cp_cluster_sensitiv
         ax.set_xlabel("First Cluster Size", fontsize=20)
         ax.set_ylabel(r"$\rho$", fontsize=20)
         ax.tick_params(axis="both", which="major", labelsize=16)
+        # Trick so that it is only applied to the second heatmap (so that both images have the same height)
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         plt.savefig(
