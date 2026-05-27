@@ -214,6 +214,28 @@ def main(args, verbose=None):
 
     os.makedirs(args.output_dir, exist_ok=True)
 
+    output_file = os.path.join(args.output_dir, "results.json")
+    current_parameters = {
+        "first_cluster_sizes": first_cluster_sizes,
+        "rho_values": rho_values,
+        "gamma": gamma_val,
+        "t": t_val,
+        "n_runs": n_runs,
+    }
+
+    if os.path.exists(output_file) and not args.force:
+        try:
+            with open(output_file, "r") as f:
+                existing_results = json.load(f)
+            if existing_results.get("parameters") == current_parameters:
+                if verbose:
+                    print(
+                        f"Results already exist at {output_file} for the same parameters; skipping recomputation."
+                    )
+                return
+        except Exception:
+            pass
+
     param_combinations = [
         (size, rho) for size in first_cluster_sizes for rho in rho_values
     ]
@@ -250,13 +272,7 @@ def main(args, verbose=None):
         "stds_param": {},
         "means_sym": {},
         "stds_sym": {},
-        "parameters": {
-            "first_cluster_sizes": first_cluster_sizes,
-            "rho_values": rho_values,
-            "gamma": gamma_val,
-            "t": t_val,
-            "n_runs": n_runs,
-        },
+        "parameters": current_parameters,
     }
 
     for result in all_results:
@@ -350,6 +366,11 @@ if __name__ == "__main__":
         type=int,
         default=1,
         help="Verbosity level (0=silent, 1=default, >=2 includes joblib progress)",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Recompute even if matching results.json already exists",
     )
 
     args = parser.parse_args()

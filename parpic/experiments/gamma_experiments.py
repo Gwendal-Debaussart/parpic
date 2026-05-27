@@ -1,4 +1,6 @@
 import json
+import argparse
+import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,29 +30,45 @@ def run_gamma_trial(gamma_val, A, y, P, t, run_id, seed=42):
 
 # for dataset_name in ["email_eu", "polblogs", "seeds", "iris"]:
 # for dataset_name in ["control_chart", "vertebral", "polblogs"]:
-for dataset_name in ["disbm_chain"]:
-    print(f"Dataset: {dataset_name}")
-    if dataset_name in ["disbm_chain", "disbm_cp"]:
-        if dataset_name == "disbm_chain":
-            block_sizes = [500, 500, 500]
-            probs = [
-                [0.05, 0.6, 0.0],
-                [0.01, 0.05, 0.6],
-                [0.0, 0.01, 0.05],
-            ]
-        else:
-            block_sizes = [1300, 1300, 1300]
-            probs = np.array(
-                [
-                    [0.05, 0.6, 0.6],
-                    [0.02, 0.05, 0.02],
-                    [0.02, 0.02, 0.05],
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run gamma experiments")
+    parser.add_argument(
+        "--datasets", nargs="+", default=None, help="Dataset names to run"
+    )
+    parser.add_argument(
+        "--force", action="store_true", help="Recompute even if results exist"
+    )
+    args = parser.parse_args()
+
+    datasets_to_run = args.datasets if args.datasets else ["disbm_chain"]
+
+    for dataset_name in datasets_to_run:
+        print(f"Dataset: {dataset_name}")
+        json_filename = f"tables/gamma_sensitivity/{dataset_name}_gamma_sweep.json"
+        if os.path.exists(json_filename) and not args.force:
+            print(f"Skipping {dataset_name}: {json_filename} already exists")
+            continue
+        if dataset_name in ["disbm_chain", "disbm_cp"]:
+            if dataset_name == "disbm_chain":
+                block_sizes = [500, 500, 500]
+                probs = [
+                    [0.05, 0.6, 0.0],
+                    [0.01, 0.05, 0.6],
+                    [0.0, 0.01, 0.05],
                 ]
-            )
-        A, y, _ = directed_sbm(block_sizes=block_sizes, P=probs)
-        A = A.astype(float)
-    else:
-        A, y, _ = load_dataset(dataset_name)
+            else:
+                block_sizes = [1300, 1300, 1300]
+                probs = np.array(
+                    [
+                        [0.05, 0.6, 0.6],
+                        [0.02, 0.05, 0.02],
+                        [0.02, 0.02, 0.05],
+                    ]
+                )
+            A, y, _ = directed_sbm(block_sizes=block_sizes, P=probs)
+            A = A.astype(float)
+        else:
+            A, y, _ = load_dataset(dataset_name)
 
     # block_sizes = [500, 500, 500]
     # probs = [

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# This script has been AI generated to run all experiments and visualizations.
 
 set -euo pipefail
 

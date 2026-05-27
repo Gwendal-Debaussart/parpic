@@ -180,6 +180,11 @@ def export_summary_json(datasets: list) -> None:
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run num cluster sensitivity")
+    parser.add_argument("--force", action="store_true", help="Recompute even if outputs exist")
+    args = parser.parse_args()
     if "directed_sbm" not in dataset_functions():
         raise RuntimeError("Dataset function 'directed_sbm' is not available.")
 
@@ -201,6 +206,10 @@ if __name__ == "__main__":
         f"Running benchmark formulation for {len(datasets)} cluster settings "
         f"(model={MODEL_TYPE}, repeats={NUM_REPEATS})."
     )
+
+    if MEANS_JSON.exists() and VARS_JSON.exists() and not args.force:
+        print(f"Skipping export: {MEANS_JSON} and {VARS_JSON} already exist")
+        raise SystemExit(0)
 
     n_cores = multiprocessing.cpu_count()
     n_jobs = min(len(datasets), max(1, n_cores // 4))

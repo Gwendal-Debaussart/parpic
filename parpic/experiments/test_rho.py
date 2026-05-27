@@ -117,6 +117,27 @@ def process_parameter_combination(first_block_size, rho, verbose=1):
 
 def main(verbose=1):
     RHO_DIR.mkdir(parents=True, exist_ok=True)
+    parser = None
+    # if script invoked directly, allow --force
+    try:
+        import sys
+
+        if __name__ == "__main__":
+            parser = argparse.ArgumentParser()
+            parser.add_argument("--force", action="store_true")
+            parsed = parser.parse_args()
+            force_flag = parsed.force
+        else:
+            force_flag = False
+    except Exception:
+        force_flag = False
+
+    means_path = RHO_DIR / f"{DISBM_TYPE}_rho_means.npy"
+    stds_path = RHO_DIR / f"{DISBM_TYPE}_rho_stds.npy"
+    if means_path.exists() and stds_path.exists() and not force_flag:
+        if verbose:
+            print(f"Skipping rho sensitivity: {means_path} and {stds_path} exist")
+        return
     rho_means = {}
     rho_stds = {}
     if DISBM_TYPE == "cp":
